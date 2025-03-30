@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% extends "index.html" %}
+{% load static %}
+
+{% block main_content %}
+<div class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh; padding-top: 10px; padding-bottom: 20px;">
+    <div class="col-md-8 text-center">
+        <div class="row mb-4">
+            <div class="col">
+                <h4>Пошук позичених книг</h4>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col">
+                <nav class="navbar bg-body-light">
+                    <div class="container-fluid justify-content-center align-items-center"> 
+                        <form class="d-flex" role="search" action="/returns" method="POST" id="search-form">
+                            {% csrf_token %}
+                            <input class="form-control me-2" type="search" placeholder="Пошук" aria-label="Search" name="query" id="search-input" value="{{ query }}">
+                            <button class="btn btn-outline-primary" type="submit">Пошук</button>
+                        </form>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col">
+                <p>{{ loans.count }} позик знайдено.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="container" style="overflow-y: auto; height: 400px;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <td>ID</td>
+                                <td>ID читача</td>
+                                <td>Прізвище читача</td>
+                                <td>ID книги</td>
+                                <td>Назва книги</td>
+                                <td>Дата позики</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in loans %}
+                            <tr>
+                                <td>{{ loan.id }}</td>
+                                <td>{{ loan.readers_id }}</td>
+                                <td>{{ loan.readers.lastname }}</td>
+                                <td>{{ loan.book_id }}</td>
+                                <td>{{ loan.book.book.title }}</td>
+                                <td>{{ loan.loandate }}</td>
+                                <td><a href="{% url 'loan_preview' loan.book_id %}" class="btn btn-outline-primary">Повернути</a></td>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('search-input').addEventListener('input', function(event) {
+        if (!this.value) {
+            document.getElementById('search-form').submit();
+        }
+    });
+</script>
+
+{% endblock %}

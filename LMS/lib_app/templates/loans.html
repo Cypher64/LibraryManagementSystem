@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+{% extends "index.html" %}
+{% load static %}
+
+{% block main_content %}
+<div class="container-flex text-center justify-content-center align-items-center" style="padding-top: 10px; padding-bottom: 20px; margin-top: 10px; vertical-align: middle;">
+    <div class="row justify-content-center align-middle" style="margin-top: 10px; height: 60px;">
+        <div class="col-md-8">
+            <h4>Взяті книги - {{ count }}</h4>
+        </div>
+        <div class="col-md-4">
+            <h4 style="margin-top: 15px;">Запис про позику</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="container" style="overflow-y: auto; height: 400px;">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <td>ID</td>
+                            <td>Назва</td>
+                            <td>Автор(и)</td>
+                            <td>Жанр</td>
+                            <td>Видавництво</td>
+                            <td>Рік</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr id="book_row_{{ book.id }}">
+                            <td>{{ book.id }}</td>
+                            <td>{{ book.title }}</td>
+                            <td>
+                                {% for bookauthor in book.bookauthors_set.all %}
+                                    {{ bookauthor.author.lastname }}, {{ bookauthor.author.firstname }}
+                                    {% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ book.genre }}</td>
+                            <td>{{ book.publishing }}</td>
+                            <td>{{ book.year }}</td>
+                            <td><button class="btn btn-outline-danger" onclick="deleteBook({{ book.id }})"> Видалити </button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <script>
+                    function deleteBook(bookId) {
+                        var row = document.getElementById('book_row_' + bookId);
+                        row.parentNode.removeChild(row);
+                    }
+                </script>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="container" style="overflow-y: auto; height: 450px; background: #CEECF5;">
+                <form class="d-flex" action="/readers/add" method="POST">
+                    {% csrf_token %}
+                    <table class="table" style="margin-top: 20px;">
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle; padding-left: 15px; font-size: 15px;">ID:</td>
+                            <td colspan="2"><input type="text" class="form-control" id="reader_id" name="reader_id"></td>
+                            <td><button class="btn btn-primary" type="button" onclick="fetchReaderData()">Go</button></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle; padding-left: 15px; font-size: 15px;">Ім'я:</td>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle; padding-left: 15px; font-size: 15px;">Прізвище:</td>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle; padding-left: 15px; font-size: 15px;">Email:</td>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle; padding-left: 15px; font-size: 15px;">Моб. тел.:</td>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle; padding-left: 15px; font-size: 15px;">Start date & time:</td>
+                            <td colspan="3"><input type="text" class="form-control" id="start_date_time" name="start_date_time" readonly></td>
+                        </tr>
+                    </table>
+                </form>
+                <ul style="text-align: left; vertical-align: middle; padding-left: 15px;">
+                    <li><small>Readers are requested to handle all Library property carefully to avoid damage to it and also not to disturb other readers/users</small></li>
+                    <li><small>No Library material can be taken out of the Library without permission of the Librarian</small></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        var now = new Date();
+        var dateString = now.toLocaleDateString('en-GB');
+        var timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        document.getElementById('start_date_time').value = `${dateString}, ${timeString}`;
+    };
+</script>
+{% endblock %}

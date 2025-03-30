@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+{% extends "index.html" %}
+{% load static %}
+
+{% block main_content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh; padding-top: 10px; padding-bottom: 20px;">
+    <div class="col-md-8 text-center">
+        <div class="row mb-4">
+            <div class="col">
+                <h4>Пошук Книг</h4>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col">
+                <nav class="navbar bg-body-light">
+                    <div class="container-fluid justify-content-center align-items-center"> 
+                        <form class="d-flex" role="search" action="/books/" method="POST" id="search-form">
+                            {% csrf_token %}
+                            <input class="form-control me-2" type="search" placeholder="Пошук" aria-label="Search" name="query" id="search-input" value="{{ query }}">
+                            <button class="btn btn-outline-primary" type="submit">Пошук</button>
+                        </form>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col">
+                <button role="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">Додати книгу</button>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col">
+                <p>{{ books.count }} книг доступно.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="container" style="overflow-y: auto; height: 400px;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <td>ID</td>
+                                <td>Назва</td>
+                                <td>Автор(и)</td>
+                                <td>Жанр</td>
+                                <td>Видавництво</td>
+                                <td>Рік</td>
+                                <td>Копії</td>
+                                <td>Доступні</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in books %}
+                            <tr>
+                                <td>{{ book.id }}</td>
+                                <td>{{ book.title }}</td>
+                                <td>
+                                    {% for bookauthor in book.bookauthors_set.all %}
+                                        {{ bookauthor.author.lastname }}, {{ bookauthor.author.firstname }}
+                                        {% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ book.genre }}</td>
+                                <td>{{ book.publishing }}</td>
+                                <td>{{ book.year }}</td>
+                                <td>{{ book.copies }}</td>
+                                <td>{{ book.available }}</td>
+                                <td><a href="{% url 'loan_preview' book.id %}" class="btn btn-outline-primary">Взяти</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBookModalLabel">Додати нову книгу</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addBookForm" action="/add_book" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="bookTitle" class="form-label">Назва книги</label>
+                        <input type="text" class="form-control" id="bookTitle" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookAuthor" class="form-label">Автор</label>
+                        <input type="text" class="form-control" id="bookAuthor" name="author" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookGenre" class="form-label">Жанр</label>
+                        <select class="form-select" id="bookGenre" name="genre" required>
+                            {% for genre in genres %}
+                            <option value="{{ genre.id }}">{{ genre.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookPublisher" class="form-label">Видавництво</label>
+                        <select class="form-select" id="bookPublisher" name="publisher" required>
+                            {% for publisher in publishers %}
+                            <option value="{{ publisher.id }}">{{ publisher.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookYear" class="form-label">Рік видання</label>
+                        <input type="number" class="form-control" id="bookYear" name="year" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Додати</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('search-input').addEventListener('input', function(event) {
+        if (!this.value) {
+            document.getElementById('search-form').submit();
+        }
+    });
+</script>
+
+{% endblock %}
