@@ -1,6 +1,7 @@
 # Database practice project
 
 This project was created for a training practice in databases. This project was written using django, the main goal was to develop the database architecture and implement the interface for easy operation. 
+
 The user (librarian) can make a step by step:
 - Register and search readers
 - Add and search books
