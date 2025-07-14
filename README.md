@@ -30,7 +30,7 @@ And finaly run project:
 ```
 python3 manage.py runserver 8080
 ```
-Screenshots of the project:
+## Screenshots of the project:
 - Home page
 <img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/5dbaf417-7603-4292-8574-cdc3c1386663" />
 
