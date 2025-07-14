@@ -1,5 +1,5 @@
 """
-URL configuration for mysite project.
+URL configuration for LMS project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -21,9 +21,9 @@ from .views import *
 urlpatterns = [
     path('', home),
     path('home', home),
-    path('readers/', Readers_tab, name='readers'),
+    path('readers', Readers_tab, name='readers'),
     path('readers/add', save_readers),
-    path('books/', Book_tab, name='books'),
+    path('books', Book_tab, name='books'),
     path('books/add', add_book),
     path('loans', loans),
     path('loan/preview/<str:book_ids>/', loan_preview, name='loan_preview'),
